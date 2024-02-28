@@ -18,14 +18,30 @@ np.random.seed(42)
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.fc1 = nn.Linear(3,2)
-        self.relu = nn.ReLU()
-        self.fc2 = nn.Linear(2,2)
+        self.fc1 = nn.Linear(100,64)
+        self.relu1 = nn.ReLU()
+        self.fc2 = nn.Linear(64,32)
+        self.relu2 = nn.ReLU()
+        self.fc3 = nn.Linear(32,16)
+        self.relu3 = nn.ReLU()
+        self.fc4 = nn.Linear(16,8)
+        self.relu4 = nn.ReLU()
+        self.fc5 = nn.Linear(8,4)
+        self.relu5 = nn.ReLU()
+        self.fc6 = nn.Linear(4,2)
         
     def forward(self, x):
         x = self.fc1(x)
-        x = self.relu(x)
-        output = self.fc2(x)
+        x = self.relu1(x)
+        x = self.fc2(x)
+        x = self.relu2(x)
+        x = self.fc3(x)
+        x = self.relu3(x)
+        x = self.fc4(x)
+        x = self.relu4(x)
+        x = self.fc5(x)
+        x = self.relu5(x)
+        output = self.fc6(x)
         return output
     
 def train_network(features, labels, model_name):
@@ -37,12 +53,12 @@ def train_network(features, labels, model_name):
     # )
     model = Net()
     criterion = nn.CrossEntropyLoss() #binary cross entropy loss
-    optimizer = optim.Adam(model.parameters(), lr = 0.01)
+    optimizer = optim.Adam(model.parameters(), lr = 0.005)
 
     features = torch.from_numpy(features).float()
     labels = torch.from_numpy(labels).long()  #was long
 
-    train_dataset = TensorDataset(features[0:1000], labels[0:1000])
+    train_dataset = TensorDataset(features[0:2000], labels[0:2000])
 
     batch_size = 32
 
@@ -164,9 +180,9 @@ def load_onnx():
     print(onnx.helper.printable_graph(model.graph))
 
 def main():
-    feature_name = "datasets/SEA_features_sd_12.npy"
-    label_name = "datasets/SEA_labels_sd_12.npy"
-    model_name = "model_weights/SEA_staticnn_12.pth"
+    feature_name = "datasets/SEA_features_s_100_f.npy"
+    label_name = "datasets/SEA_labels_s_100_f.npy"
+    model_name = "model_weights/SEA_staticnn_s_100_f.pth"
 
     features, labels = get_dataset(feature_name, label_name)
     train_network(features, labels, model_name)

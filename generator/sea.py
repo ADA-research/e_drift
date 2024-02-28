@@ -11,7 +11,7 @@ def generate_data(feature_name, label_name, seed, samples, drift_idx):
 
     
     #generate features
-    X = np.random.rand(samples, 3)
+    X = np.random.rand(samples, 10)
     y = []
 
     for idx, instance in enumerate(X):
@@ -22,27 +22,30 @@ def generate_data(feature_name, label_name, seed, samples, drift_idx):
             #     y.append(1)
             # else:
             #     y.append(0)
-            y.append((instance[1] + instance[2] > 0.8).astype(int))
+            y.append((np.sum(instance[0:5]) > 2.8).astype(int))
         
         else:
-            y.append((instance[0] + instance[1] > 0.8).astype(int))
+            y.append((np.sum(instance[0:5]) > 2.5).astype(int))
     
     return X,y
     
 def save_data(features, labels, feature_name, label_name):
-    scaler = MinMaxScaler()
-    features = scaler.fit_transform(features)
+    #scaler = MinMaxScaler()
+    #features = scaler.fit_transform(features)
 
     features = np.array(features)
     labels = np.array(labels)
+
+    values, counts = np.unique(labels, return_counts=True)
+    print(values, counts)
 
     np.save(feature_name, features)
     np.save(label_name, labels)
 
 
 
-feature_name = "datasets_42/SEA_features_s_12_23.npy"
-label_name = "datasets_42/SEA_labels_s_12_23.npy"
+feature_name = "datasets/SEA_features_s_10_l.npy"
+label_name = "datasets/SEA_labels_s_10_l.npy"
 seed = 42
 samples = 10000
 drift_idx = 5000
