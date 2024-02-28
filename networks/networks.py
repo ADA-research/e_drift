@@ -1,6 +1,6 @@
 import numpy as np
 
-
+#network for 100 features
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
@@ -30,6 +30,7 @@ class Net(nn.Module):
         output = self.fc6(x)
         return output
     
+#network for 10 features
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
@@ -45,4 +46,18 @@ class Net(nn.Module):
         x = self.fc2(x)
         x = self.relu2(x)
         output = self.fc3(x)
+        return output
+    
+#default network for SEA dataset
+class Net(nn.Module):
+    def __init__(self):
+        super(Net, self).__init__()
+        self.fc1 = nn.Linear(3,2)
+        self.relu = nn.ReLU()
+        self.fc2 = nn.Linear(2,2)
+        
+    def forward(self, x):
+        x = self.fc1(x)
+        x = self.relu(x)
+        output = self.fc2(x)
         return output
