@@ -4,6 +4,4 @@ from sklearn.preprocessing import MinMaxScaler
 
 def generate_data():
 
-
-
-
+    

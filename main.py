@@ -180,9 +180,9 @@ def load_onnx():
     print(onnx.helper.printable_graph(model.graph))
 
 def main():
-    feature_name = "datasets/SEA_features_s_100_f.npy"
-    label_name = "datasets/SEA_labels_s_100_f.npy"
-    model_name = "model_weights/SEA_staticnn_s_100_f.pth"
+    feature_name = "datasets/SEA_features_s_100_l.npy"
+    label_name = "datasets/SEA_labels_s_100_l.npy"
+    model_name = "model_weights/SEA_staticnn_s_100_fake.pth"
 
     features, labels = get_dataset(feature_name, label_name)
     train_network(features, labels, model_name)
