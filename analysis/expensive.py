@@ -26,33 +26,9 @@ def extract(sep_epsilons, dec_epsilons):
     
         diff_eps.append(abs(sep_eps-dec_eps))
 
+    print(len(diff_eps), "wtf")
+
     return diff_eps
-
-def drift_detection(diff_eps, alpha, window_size, stat_size, seed, begin_idx, threshold):
-
-    FP = 0
-    TP = 0
-
-    kswin = drift.KSWIN(alpha = alpha, window_size=window_size, stat_size=stat_size, seed = seed)
-    kswin._reset()
-    earlier_det = -1
-
-    for idx, eps in enumerate(diff_eps):
-
-        kswin.update(eps)
-        if kswin.drift_detected:
-
-            if idx+begin_idx < threshold:
-
-                FP+=1
-            
-            else:
-                TP+=1
-
-                if earlier_det == -1:
-                    earlier_det = idx+begin_idx
-    
-    return TP, FP, earlier_det
 
 def track_diff(diff_eps):
 
@@ -61,21 +37,71 @@ def track_diff(diff_eps):
 
     max_dif = np.max(diff_eps[0:1000])
 
-    print(max_dif)
+    print(diff_eps[1000:2000])
 
-    for idx, eps in enumerate(diff_eps[1000:6000]):
+    for idx, eps in enumerate(diff_eps):
         if eps>max_dif:
-            print(eps, idx+3000)
+            print("eps: ", eps, "index: ", idx+4000)
+    
+    print(np.mean(diff_eps[0:1000]), np.std(diff_eps[0:1000]))
+    print(np.mean(diff_eps[1000:2000]), np.std(diff_eps[1000:2000]))
 
-epsilon_sep = "results/SEA_sd_13.csv"
-epsilon_dec = "results/SEA_sd_13_pred.csv"
-alpha = 0.001
-window_size = 700
-stat_size = 300
-seed = 4
-begin_idx = 2000
-threshold = 5000
 
+def kswin(diff_eps, window_size, stat_size, alpha):
+
+    kswin = drift.KSWIN(window_size= window_size, stat_size = stat_size, alpha = alpha, seed=42)
+
+
+    for idx, eps in enumerate(diff_eps):
+
+        kswin.update(eps)
+
+        if kswin.drift_detected:
+
+            print("index: ", idx+4000, eps)
+
+
+
+def plot(diff_eps):
+    x_values = np.arange(0,len(diff_eps))
+    plt.plot(x_values, diff_eps, marker='o', linestyle='-')
+    plt.xlabel('time')
+    plt.ylabel('critical epsilon value')
+    plt.show()
+
+def violin_plot(diff_eps, window, begin_idx, start, end):
+
+    df = pd.DataFrame(columns = ["time","lower bound to critical epsilon"])
+
+    for i in range(start, end, window):
+
+        eps_vals = diff_eps[i:i+window]
+        print(eps_vals, "values")
+        for idx, eps in enumerate(eps_vals):
+            if eps>0:
+                df.loc[len(df.index)] = [i+window+begin_idx, eps]
+    
+    sns.boxplot(data=df, x="time", y="lower bound to critical epsilon")
+    plt.axvline(x=1.5, color = "red")
+    plt.legend(loc='upper right')
+    plt.show()
+
+
+
+
+epsilon_sep = "results/SEA_s_100_f.csv"
+epsilon_dec = "results/SEA_s_100_f_pred.csv"
+
+
+window_size = 300
+stat_size = 100
+alpha = 0.01
+
+
+start = 0
+end = 6000
+window = 100
+begin_idx = 0
 
 #read in csv files
 sep_epsilons, dec_epsilons = read_csv(epsilon_sep, epsilon_dec)
@@ -84,8 +110,12 @@ sep_epsilons, dec_epsilons = read_csv(epsilon_sep, epsilon_dec)
 diff_eps = extract(sep_epsilons, dec_epsilons)
 
 
-track_diff(diff_eps)
+#track_diff(diff_eps)
 
+#kswin(diff_eps, window_size, stat_size, alpha)
+plot(diff_eps)
+
+violin_plot(diff_eps, window, begin_idx, start, end)
 # TP, FP, earlier_det = drift_detection(diff_eps, alpha, window_size, stat_size, seed, begin_idx, threshold)
 
 # print(TP)
