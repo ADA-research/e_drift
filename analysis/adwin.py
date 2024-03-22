@@ -30,56 +30,17 @@ def extract(sep_epsilons, dec_epsilons):
 
 def drift_detector(diff_eps, window, threshold):
 
-    #get mean and std of training data (first 1000 instances)
+    #adwin = drift.ADWIN(delta = 0.2, clock = 32, max_buckets=5, min_window_length=5, grace_period=10)
+    adwin = drift.KSWIN()
+    for i, val in enumerate(diff_eps):
 
-    ref_mean = np.mean(diff_eps[0:100])
-    ref_std = np.std(diff_eps[0:100])
+        adwin.update(val)
 
-    print("refmean ", ref_mean, "refstd ", ref_std)
+        if adwin.drift_detected:
 
-    ##sliding window approach
-
-    mean_window = []
-    std_window = []
-
-    count_m = 0
-    count_s = 0
-
-    for i in range(100, len(diff_eps)):
-
-        if len(mean_window) == window:
-            if np.mean(mean_window)> ref_mean * threshold:
-                count_m +=1
-
-                print("instance ", i+4800)
-                print("refmean ", ref_mean, "mean ", np.mean(mean_window))
-                if i+4800>5000:
-                    print(count_m)
-
-                    break
-            
-            mean_window.pop(0)
-            mean_window.append(diff_eps[i])
-
-        
-        else:
-            mean_window.append(diff_eps[i])
+            print(i+4000, "change detected")
 
 
-        if len(std_window) == window:
-            if np.std(std_window) > ref_std* threshold:
-                count_s +=1
-                print("instance ", i+4800)
-                print("refstd ", ref_std, "std ", np.std(std_window))
-                if i+4800>5000:
-                    print(count_s)
-
-                    break
-            std_window.pop(0)
-            std_window.append(diff_eps[i])
-
-        else:
-            std_window.append(diff_eps[i])
 
 
 
@@ -100,8 +61,8 @@ def drift_detector(diff_eps, window, threshold):
     
 ###########################################
 
-epsilon_sep = "results/SEA_s_100_l.csv"
-epsilon_dec = "results/SEA_s_100_l_pred.csv"
+epsilon_sep = "results/SEA_s_10_l.csv"
+epsilon_dec = "results/SEA_s_10_l_pred.csv"
 threshold = 20
 window = 100
 
