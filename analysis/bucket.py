@@ -32,8 +32,8 @@ def drift_detector(diff_eps, window, threshold):
 
     #get mean and std of training data (first 1000 instances)
 
-    ref_mean = np.mean(diff_eps[0:100])
-    ref_std = np.std(diff_eps[0:100])
+    ref_mean = np.mean(diff_eps[0:500])
+    ref_std = np.std(diff_eps[0:500])
 
     print("refmean ", ref_mean, "refstd ", ref_std)
 
@@ -45,15 +45,15 @@ def drift_detector(diff_eps, window, threshold):
     count_m = 0
     count_s = 0
 
-    for i in range(100, len(diff_eps)):
+    for i in range(500, len(diff_eps)):
 
         if len(mean_window) == window:
             if np.mean(mean_window)> ref_mean * threshold:
                 count_m +=1
 
-                print("instance ", i+4800)
+                print("instance ", i+2000)
                 print("refmean ", ref_mean, "mean ", np.mean(mean_window))
-                if i+4800>5000:
+                if i+2000>5000:
                     print(count_m)
 
                     break
@@ -69,9 +69,9 @@ def drift_detector(diff_eps, window, threshold):
         if len(std_window) == window:
             if np.std(std_window) > ref_std* threshold:
                 count_s +=1
-                print("instance ", i+4800)
+                print("instance ", i+2000)
                 print("refstd ", ref_std, "std ", np.std(std_window))
-                if i+4800>5000:
+                if i+2000>5000:
                     print(count_s)
 
                     break
@@ -100,9 +100,9 @@ def drift_detector(diff_eps, window, threshold):
     
 ###########################################
 
-epsilon_sep = "results/SEA_s_100_l.csv"
-epsilon_dec = "results/SEA_s_100_l_pred.csv"
-threshold = 20
+epsilon_sep = "results/SEA_s_12_3.csv"
+epsilon_dec = "results/SEA_s_12_3_pred.csv"
+threshold = 100
 window = 100
 
 #retrieve seperator epsilon values and decision boundary epsilon values
