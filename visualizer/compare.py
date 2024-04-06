@@ -176,18 +176,32 @@ def graph(fp_counts, tp_positions, confidences):
         for j in range(len(tp_positions[i])):
             ax1.annotate(confidences[j], (tp_positions[i][j], fp_counts[i][j]+0.001), ha='center', rotation=60)
 
-    #plt.plot(bins[0][1:], cdfs, color = "red", label = "reference window (4800-5000)")
-    plt.xlabel("TP detection position")
-    plt.ylabel("FP count")
-    #plt.ylim(-0.1, 20)
-    plt.xscale("log")
+def graph1(tp_positions, confidences):
+    names = ["mannwhitneyu","kolmogorov smirnov test", "KSWIN", "ADWIN", "PageHinkley"]
+    fig1, ax1 = plt.subplots()
+
+    for i in range(len(names)):
+        x_points = np.empty(len(tp_positions[i]))
+        x_points.fill(i+1)
+
+        ax1.plot(x_points, tp_positions[i], "-o", label = names[i])
+        for j in range(len(tp_positions[i])):
+            ax1.annotate(confidences[j], (x_points[j],tp_positions[i][j]), ha='right', rotation=0)
+
+    x_ticks = np.arange(1,6)
+    plt.xticks(x_ticks, names)
+    plt.xlabel("detection mechanism")
+    plt.ylabel("TP detection position")
+    plt.ylim(-0.1, 500)
+    plt.title("SEA_12_3")
+    #plt.yscale("log")
     plt.legend()
     plt.show()
 
 
 
-epsilon_sep = "results/SEA_s_12_23.csv"
-epsilon_dec = "results/SEA_s_12_23_pred.csv"
+epsilon_sep = "results/SEA_s_12_3.csv"
+epsilon_dec = "results/SEA_s_12_3_pred.csv"
 begin_idx = 2000
 
 #retrieve seperator epsilon values and decision boundary epsilon values
@@ -241,4 +255,5 @@ tp_positions.append(tp_pos_adwin)
 tp_positions.append(tp_pos_ph)
 #generate graph
 
-graph(fp_counts, tp_positions, confidences)
+#graph(fp_counts, tp_positions, confidences)
+graph1(tp_positions, confidences)
