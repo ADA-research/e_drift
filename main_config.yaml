@@ -1,3 +1,7 @@
-dataset: 
-  synthetic: "syn"
-  real: "real"
+general:
+  data_generator:
+    SEA: #or HYP
+      noise: 0.0
+      seed: 42
+      variant_1: 7
+      variant_2: 8
