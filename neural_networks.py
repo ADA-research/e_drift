@@ -119,7 +119,7 @@ class Train():
         #visualize the drift over all instances (train and test)
         self.visualize_drift(results)
 
-    def get_predictions(self, features, labels, model):
+    def get_predictions(self, features: torch, labels: torch, model: torch):
 
         pred_labels = []
 
@@ -160,11 +160,6 @@ class Train():
         
         #get predictions based on trained model
         self.get_predictions(features, labels, model)
-        
-
-
-
-
         
 #ALL NETS USED FOR EXPERIMENTS
 class Net_3_2(nn.Module):

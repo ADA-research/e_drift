@@ -4,10 +4,7 @@ import numpy as np
 #other python files
 from neural_networks import Train
 
-#GENERATE PREDICTION LABELS
-
 #CONCEPT DRIFT DETECTION
-
 
 def train_nn(network_params: dict, dataset_name: str):
     

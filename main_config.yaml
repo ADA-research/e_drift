@@ -6,7 +6,7 @@ general:
       variant_1: 0
       variant_2: 1
       normalization: True
-  dataset_name: "dummy_name"
+  dataset_name: "SEA_0_1"
   training:
     training_instances: 2000
     shuffle: False
