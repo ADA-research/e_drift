@@ -1,22 +1,57 @@
 import numpy as np
-from river import preprocessing, datasets
+from river import preprocessing
+from river.datasets import synth
 
 
 #generate one big class
 class Dataset():
-    def __init__(self, noise=0.0, seed=42):
+    def __init__(self, noise=0.0, seed=42, normalization = False):
         self.seed = seed
         self.noise = noise
+        self.normalization = normalization
 
-    
-    def printseed(self):
-        print(self.seed)
+    def generate_dataset(self, variant_1: object, variant_2: object, datasetname: str):
+        """Generate features and labels with drift injected at timestep 5000."""
+        features, labels = [], []
 
+        #initialze normalizer
+        if self.normalization:
+            scaler = preprocessing.MinMaxScaler()
+        
+        #generate data without drift
+        for x, y in variant_1.take(5000):
+
+            if self.normalization:
+                scaler.learn_one(x)
+                x = scaler.transform_one(x)
+            features.append(list(x.values()))
+            labels.append(y)
+        
+        #generate data with drift
+        for x, y in variant_2.take(5000):
+
+            if self.normalization:
+                scaler.learn_one(x)
+                scaler.transform_one(x)
+            features.append(list(x.values()))
+            labels.append(y)
+        
+        #save features and labels
+        np.save(f"datasets/features_{datasetname}.npy", features)
+        np.save(f"datasets/labels_{datasetname}.npy", labels)
 
 #generate small classes per dataset?
 class SEA(Dataset):
-    pass
+    def __init__(self, variant_1, variant_2, noise=0.0, seed=42, normalization=False):
+        super().__init__(noise, seed, normalization)
+        self.variant_1 = synth.SEA(variant = variant_1, noise = noise, seed = seed)
+        self.variant_2 = synth.SEA(variant = variant_2, noise = noise, seed = seed)
 
 class HYP(Dataset):
-    pass
+    def __init__(self, n_features, n_drift_features, mag_change, sigma=0.0, noise=0.0, seed=42, normalization=False):
+        super().__init__(noise, seed, normalization)
+        self.variant_1 = synth.Hyperplane(n_features=n_features, n_drift_features=n_drift_features, 
+                                          mag_change=0.0, sigma=sigma, noise=noise, seed=seed)
+        self.variant_2 = synth.Hyperplane(n_features=n_features, n_drift_features=n_drift_features, 
+                                          mag_change=mag_change, sigma=sigma, noise=noise, seed=seed)
 

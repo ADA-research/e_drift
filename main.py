@@ -4,31 +4,39 @@ import numpy as np
 
 
 #other python files
-from data_generator import SEA
-
-
-
-#GENERATE DATA
 
 #TRAIN NEURAL NETWORK
 
 #VALIDATE NEURAL NETWORK
 
-#CONCEPT DRIFT DETECTION
+#GENERATE PREDICTION LABELS
 
-def generate_dataset(dataset_name: str) -> np.ndarray:
+#CONCEPT DRIFT DETECTION
+def train_nn():
+    pass
+
+def create_dataset(dataset_params: dict, dataset_name: str):
+    """Generate dataset with drift."""
 
     if dataset_name == "SEA":
-        pass
+        from data_generator import SEA
+        dataset_params = dataset_params[dataset_name]
+        dataset = SEA(dataset_params["variant_1"], dataset_params["variant_2"], 
+                      dataset_params["noise"], dataset_params["seed"], 
+                      dataset_params["normalization"])
     
     elif dataset_name == "HYP":
-        pass
+        from data_generator import HYP
+        dataset_params = dataset_params[dataset_name]
+        dataset = HYP(dataset_params["n_features"], dataset_params["n_drift_features"], 
+                      dataset_params["mag_change"], dataset_params["sigma"], 
+                      dataset_params["noise"], dataset_params["seed"],
+                      dataset_params["normalization"])
 
     else:
-        print(f"{dataset_name} is not a supported dataset.")
-
-
-    pass
+        print(f"{dataset_name} is not (yet) a supported dataset.")
+    
+    dataset.generate_dataset(dataset.variant_1, dataset.variant_2, dataset_params["name"])
 
 def read_main_config(filename: str) -> yaml:
     """Read in the main configuration file."""
@@ -44,10 +52,15 @@ def main():
     main_config = read_main_config(filename)
 
     #retrieve dataset name
+
+    #build in option to skip dataset generator with simple if statement
     dataset_name = list(main_config["general"]["data_generator"].keys())[0]
 
     #generate dataset
-    generate_dataset(dataset_name)
+    create_dataset(main_config["general"]["data_generator"], dataset_name)
+
+    #train neural network
+
 
 
 if __name__ == '__main__':

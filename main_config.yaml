@@ -3,5 +3,8 @@ general:
     SEA: #or HYP
       noise: 0.0
       seed: 42
-      variant_1: 7
-      variant_2: 8
+      variant_1: 0
+      variant_2: 1
+      normalization: True
+      name: "dummy_name"
+  dataset_name: "enter_valid_name"
