@@ -119,6 +119,25 @@ class Train():
         #visualize the drift over all instances (train and test)
         self.visualize_drift(results)
 
+    def get_predictions(self, features, labels, model):
+
+        pred_labels = []
+
+        #load model weights
+        model.load_state_dict(torch.load(f"model_weights/{self.dataset_name}.pth"))
+
+        for i in range(0,len(labels)):
+            print(i, "this is the current index")
+
+            #forward pass only
+            with torch.no_grad():
+                x = model(features[i])
+                predicted = torch.argmax(torch.softmax(x, dim=0), dim=0)
+                pred_labels.append(predicted.detach().cpu())
+        
+        #save predicted labels
+        np.save(f"datasets/labels_{self.dataset_name}_pred.npy", pred_labels)
+
     def train_pipeline(self):
 
         #set random seed for reproducability
@@ -138,6 +157,14 @@ class Train():
         #visualize model if desired
         if self.visualize:
             self.visualize_model(features, labels, model)
+        
+        #get predictions based on trained model
+        self.get_predictions(features, labels, model)
+        
+
+
+
+
         
 #ALL NETS USED FOR EXPERIMENTS
 class Net_3_2(nn.Module):

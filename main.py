@@ -7,6 +7,8 @@ from neural_networks import Train
 #GENERATE PREDICTION LABELS
 
 #CONCEPT DRIFT DETECTION
+
+
 def train_nn(network_params: dict, dataset_name: str):
     
     instance = Train(dataset_name, network_params["training_instances"],
@@ -61,8 +63,9 @@ def main():
     #generate dataset
     create_dataset(main_config["general"]["data_generator"], synth_dataset, dataset_name)
 
-    #train neural network
+    #train neural network and get predications based on trained neural network
     train_nn(main_config["general"]["training"], dataset_name)
+
 
 if __name__ == '__main__':
     main()
