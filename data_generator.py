@@ -10,7 +10,7 @@ class Dataset():
         self.noise = noise
         self.normalization = normalization
 
-    def generate_dataset(self, variant_1: object, variant_2: object, datasetname: str):
+    def generate_dataset(self, var_1: object, var_2: object, datasetname: str):
         """Generate features and labels with drift injected at timestep 5000."""
         features, labels = [], []
 
@@ -19,7 +19,7 @@ class Dataset():
             scaler = preprocessing.MinMaxScaler()
         
         #generate data without drift
-        for x, y in variant_1.take(5000):
+        for x, y in var_1.take(5000):
 
             if self.normalization:
                 scaler.learn_one(x)
@@ -28,11 +28,11 @@ class Dataset():
             labels.append(y)
         
         #generate data with drift
-        for x, y in variant_2.take(5000):
+        for x, y in var_2.take(5000):
 
             if self.normalization:
                 scaler.learn_one(x)
-                scaler.transform_one(x)
+                x = scaler.transform_one(x)
             features.append(list(x.values()))
             labels.append(y)
         
@@ -44,14 +44,14 @@ class Dataset():
 class SEA(Dataset):
     def __init__(self, variant_1, variant_2, noise=0.0, seed=42, normalization=False):
         super().__init__(noise, seed, normalization)
-        self.variant_1 = synth.SEA(variant = variant_1, noise = noise, seed = seed)
-        self.variant_2 = synth.SEA(variant = variant_2, noise = noise, seed = seed)
+        self.var_1 = synth.SEA(variant = variant_1, noise = noise, seed = seed)
+        self.var_2 = synth.SEA(variant = variant_2, noise = noise, seed = seed)
 
 class HYP(Dataset):
     def __init__(self, n_features, n_drift_features, mag_change, sigma=0.0, noise=0.0, seed=42, normalization=False):
         super().__init__(noise, seed, normalization)
-        self.variant_1 = synth.Hyperplane(n_features=n_features, n_drift_features=n_drift_features, 
+        self.var_1 = synth.Hyperplane(n_features=n_features, n_drift_features=n_drift_features, 
                                           mag_change=0.0, sigma=sigma, noise=noise, seed=seed)
-        self.variant_2 = synth.Hyperplane(n_features=n_features, n_drift_features=n_drift_features, 
+        self.var_2 = synth.Hyperplane(n_features=n_features, n_drift_features=n_drift_features, 
                                           mag_change=mag_change, sigma=sigma, noise=noise, seed=seed)
 

@@ -28,6 +28,9 @@ class Train():
         features = torch.from_numpy(features).float()
         labels = torch.from_numpy(labels).long()
 
+        print(features[5000:5010])
+        print(labels[5000:5010])
+
         #prepare dataloader
         train_dataset = TensorDataset(features[0:self.training_instances], labels[0:self.training_instances])
         train_loader = DataLoader(train_dataset, batch_size=self.batch_size, shuffle=self.shuffle)
@@ -127,7 +130,6 @@ class Train():
         model.load_state_dict(torch.load(f"model_weights/{self.dataset_name}.pth"))
 
         for i in range(0,len(labels)):
-            print(i, "this is the current index")
 
             #forward pass only
             with torch.no_grad():

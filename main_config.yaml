@@ -3,10 +3,10 @@ general:
     SEA: #or HYP
       noise: 0.0
       seed: 42
-      variant_1: 0
-      variant_2: 1
+      variant_1: 1
+      variant_2: 3
       normalization: True
-  dataset_name: "SEA_0_1"
+  dataset_name: "SEA_1_3"
   training:
     training_instances: 2000
     shuffle: False

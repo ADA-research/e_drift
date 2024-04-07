@@ -36,7 +36,7 @@ def create_dataset(dataset_params: dict, synth_dataset: str, dataset_name: str):
     else:
         print(f"{synth_dataset} is not (yet) a supported dataset.")
     
-    dataset.generate_dataset(dataset.variant_1, dataset.variant_2, dataset_name)
+    dataset.generate_dataset(dataset.var_1, dataset.var_2, dataset_name)
 
 def read_main_config(filename: str) -> yaml:
     """Read in the main configuration file."""
