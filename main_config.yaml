@@ -6,5 +6,12 @@ general:
       variant_1: 0
       variant_2: 1
       normalization: True
-      name: "dummy_name"
-  dataset_name: "enter_valid_name"
+  dataset_name: "dummy_name"
+  training:
+    training_instances: 2000
+    shuffle: False
+    model: "Net_3_2"
+    batch_size: 32
+    epochs: 25
+    learning_rate: 0.001
+    visualize: True
