@@ -22,16 +22,16 @@ def create_dataset(dataset_params: dict, synth_dataset: str, dataset_name: str):
         from data_generator import SEA
         dataset_params = dataset_params[synth_dataset]
         dataset = SEA(dataset_params["variant_1"], dataset_params["variant_2"], 
-                      dataset_params["noise"], dataset_params["seed"], 
-                      dataset_params["normalization"])
+                      dataset_params["noise"], dataset_params["seed_1"], 
+                      dataset_params["seed_2"], dataset_params["normalization"])
     
     elif synth_dataset == "HYP":
         from data_generator import HYP
         dataset_params = dataset_params[synth_dataset]
         dataset = HYP(dataset_params["n_features"], dataset_params["n_drift_features"], 
                       dataset_params["mag_change"], dataset_params["sigma"], 
-                      dataset_params["noise"], dataset_params["seed"],
-                      dataset_params["normalization"])
+                      dataset_params["noise"], dataset_params["seed_1"],
+                      dataset_params["seed_2"], dataset_params["normalization"])
 
     else:
         print(f"{synth_dataset} is not (yet) a supported dataset.")

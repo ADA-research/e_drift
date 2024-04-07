@@ -28,9 +28,6 @@ class Train():
         features = torch.from_numpy(features).float()
         labels = torch.from_numpy(labels).long()
 
-        print(features[5000:5010])
-        print(labels[5000:5010])
-
         #prepare dataloader
         train_dataset = TensorDataset(features[0:self.training_instances], labels[0:self.training_instances])
         train_loader = DataLoader(train_dataset, batch_size=self.batch_size, shuffle=self.shuffle)
@@ -94,7 +91,7 @@ class Train():
         plt.legend()
         plt.show()
 
-    def visualize_model(self, features: torch, labels: torch, model: torch):
+    def visualize_model(self, features, labels, model):
 
         #load model weights
         model.load_state_dict(torch.load(f"model_weights/{self.dataset_name}.pth"))
@@ -102,7 +99,7 @@ class Train():
         #set results:
         results = []
 
-        for i in range(0,len(labels), 100):
+        for i in range(0,10000, 100):
             print(i, "current index")
 
             #forward pass only
@@ -122,7 +119,7 @@ class Train():
         #visualize the drift over all instances (train and test)
         self.visualize_drift(results)
 
-    def get_predictions(self, features: torch, labels: torch, model: torch):
+    def get_predictions(self, features, labels, model):
 
         pred_labels = []
 

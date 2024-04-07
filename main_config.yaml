@@ -2,16 +2,17 @@ general:
   data_generator:
     SEA: #or HYP
       noise: 0.0
-      seed: 42
-      variant_1: 1
+      seed_1: 2
+      seed_2: 3
+      variant_1: 2
       variant_2: 3
       normalization: True
-  dataset_name: "SEA_1_3"
+  dataset_name: "SEA_2_3"
   training:
     training_instances: 2000
     shuffle: False
     model: "Net_3_2"
     batch_size: 32
     epochs: 25
-    learning_rate: 0.001
+    learning_rate: 0.01
     visualize: True
