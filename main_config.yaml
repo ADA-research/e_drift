@@ -14,5 +14,5 @@ general:
     model: "Net_3_2"
     batch_size: 32
     epochs: 25
-    learning_rate: 0.01
+    learning_rate: 0.005
     visualize: True

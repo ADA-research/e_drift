@@ -33,15 +33,15 @@ def extract(sep_epsilons, dec_epsilons):
 
 def drift_detector(diff_eps,begin_idx, confidence):
 
-    ref_win = diff_eps[0:99]
+    ref_win = diff_eps[1000:1499]
     test_win_values = []
 
     fp_count = 0
     tp_pos = None
     
-    for i in range(99,len(diff_eps)):
+    for i in range(1500,len(diff_eps)):
 
-        if len(test_win_values)==100:
+        if len(test_win_values)==500:
 
             res = stats.mannwhitneyu(test_win_values, ref_win)
             if res[1]< confidence:
@@ -68,15 +68,15 @@ def drift_detector(diff_eps,begin_idx, confidence):
 
 def drift_detector1(diff_eps,begin_idx, confidence):
 
-    ref_win = diff_eps[0:99]
+    ref_win = diff_eps[1000:1499]
     test_win_values = []
 
     fp_count = 0
     tp_pos = None
     
-    for i in range(99,len(diff_eps)):
+    for i in range(1500,len(diff_eps)):
 
-        if len(test_win_values)==100:
+        if len(test_win_values)==500:
 
             res = stats.ks_2samp(test_win_values, ref_win)
             if res[1]< confidence:
@@ -183,32 +183,38 @@ def graph1(tp_positions, confidences):
     for i in range(len(names)):
         x_points = np.empty(len(tp_positions[i]))
         x_points.fill(i+1)
+        color_list = ["orange"]
+        color_list = color_list * len(tp_positions[i])
 
-        ax1.plot(x_points, tp_positions[i], "-o", label = names[i])
+        color_list = np.arange(len(tp_positions[i]))
+
+        ax1.scatter(x_points, tp_positions[i], c=color_list, cmap="viridis")
+        ax1.plot(x_points, tp_positions[i], linestyle = "-", color="black")
         for j in range(len(tp_positions[i])):
+            #ax1.plot(x_points[j], tp_positions[i][j], marker = "o", c=color_list[j])
             ax1.annotate(confidences[j], (x_points[j],tp_positions[i][j]), ha='right', rotation=0)
 
     x_ticks = np.arange(1,6)
     plt.xticks(x_ticks, names)
     plt.xlabel("detection mechanism")
     plt.ylabel("TP detection position")
-    plt.ylim(-0.1, 500)
+    plt.ylim(-0.1, 1500)
     plt.title("SEA_12_3")
     #plt.yscale("log")
-    plt.legend()
+    #plt.legend()
     plt.show()
 
 
 
-epsilon_sep = "results/SEA_s_12_3.csv"
-epsilon_dec = "results/SEA_s_12_3_pred.csv"
-begin_idx = 2000
+epsilon_sep = "results/SEA_2_3.csv"
+epsilon_dec = "results/SEA_2_3.csv"
+begin_idx = 0
 
 #retrieve seperator epsilon values and decision boundary epsilon values
 sep_epsilons, dec_epsilons = read_csv(epsilon_sep, epsilon_dec)
 
 #extract epsilon values
-diff_eps = extract(sep_epsilons, dec_epsilons)
+diff_eps = sep_epsilons#extract(sep_epsilons, dec_epsilons)
 
 
 confidences = [0.05, 0.01, 0.005, 0.001, 0.0001]
@@ -222,11 +228,13 @@ fp_count_ph, tp_pos_ph = [], []
 for confidence in confidences:
     #detect drift
     fp_count, tp_pos = drift_detector(diff_eps, begin_idx, confidence)
-    fp_count_mann.append(fp_count)
-    tp_pos_mann.append(tp_pos)
+    if tp_pos !=None:
+        fp_count_mann.append(fp_count)
+        tp_pos_mann.append(tp_pos)
     fp_count, tp_pos = drift_detector1(diff_eps, begin_idx, confidence)
-    fp_count_ks.append(fp_count)
-    tp_pos_ks.append(tp_pos)
+    if tp_pos !=None:
+        fp_count_ks.append(fp_count)
+        tp_pos_ks.append(tp_pos)
     fp_count, tp_pos = drift_detector2(diff_eps, begin_idx, confidence)
     if tp_pos !=None:
         fp_count_kswin.append(fp_count)
