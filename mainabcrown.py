@@ -68,10 +68,12 @@ def unknown_search(instance_idx, eps_idx, epsilons, safe_idx, unsafe_idx, timeou
     if safe_idx == -np.inf:
         begin = 0
     else:
-        begin = safe_idx
+        #safe_idx +1 since we do not need to evaluate it again
+        begin = safe_idx+1
     if unsafe_idx == np.inf:
         end = len(epsilons)
     else:
+        #unsafe_idx not -1 since in range it is until end (so actually end-1)
         end = unsafe_idx
     
     
@@ -103,22 +105,23 @@ def unknown_search(instance_idx, eps_idx, epsilons, safe_idx, unsafe_idx, timeou
             print(result[0], "dit is een nieuwe error")
             print(safe_idx, unsafe_idx)
             print(eps_idx, epsilons[eps_idx])
-            #break
+            continue
 
     return safe_idx, unsafe_idx 
 
 
 def determine_critical_eps(instance_idx, epsilons, timeout, yaml_name, result_file):
 
-    #always start with middle epsilon value
-    eps_idx = int(len(epsilons)/2)
-    epsilon = epsilons[eps_idx]
-
     safe_idx = -np.inf
     unsafe_idx = np.inf
 
     terminated = False
     counter = 0
+    
+    
+    #always start with middle epsilon value
+    eps_idx = int(len(epsilons)/2)
+    epsilon = epsilons[eps_idx]
 
     while not terminated:
         print(counter, "counter")
@@ -163,7 +166,7 @@ def determine_critical_eps(instance_idx, epsilons, timeout, yaml_name, result_fi
             if eps_idx < unsafe_idx:
                 unsafe_idx = eps_idx
 
-        elif result[0][0] == "unknown":
+        elif result[0][0] == "unknown" or result[0][0] == "timeout":
             return unknown_search(instance_idx, eps_idx, epsilons, safe_idx, unsafe_idx, timeout, yaml_name, result_file)
 
         else:
@@ -181,7 +184,7 @@ def determine_critical_eps(instance_idx, epsilons, timeout, yaml_name, result_fi
         if counter == len(epsilons):
             terminated = True
     
-    return -1, -1
+    return safe_idx, unsafe_idx
 
 def main():
 
