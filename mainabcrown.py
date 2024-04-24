@@ -234,7 +234,7 @@ def main():
             #check if safe is not set:
             if safe_idx == -np.inf:
                 #check if instance is very close to decision boundary (safe==-np.inf and unsafe==0)
-                if unsafe==0:
+                if unsafe_idx==0:
                     safe_eps=0
             
                 #otherwise i) (unknown....unsafe) or ii) all are unknown
