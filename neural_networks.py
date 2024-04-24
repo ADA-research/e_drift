@@ -1,10 +1,13 @@
 import random
 import torch
 from torch import nn
+from skorch import NeuralNetClassifier
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 import numpy as np
 import matplotlib.pyplot as plt
+from utils import write_yaml_HPO
 
 #TRAINING PIPELINE
 class Train():
@@ -28,10 +31,8 @@ class Train():
         features = torch.from_numpy(features).float()
         labels = torch.from_numpy(labels).long()
 
-        #prepare dataloader
-        train_dataset = TensorDataset(features[0:self.training_instances], labels[0:self.training_instances])
-        train_loader = DataLoader(train_dataset, batch_size=self.batch_size, shuffle=self.shuffle)
-        return features, labels, train_loader
+        
+        return features, labels
     
     def retrieve_model(self)-> torch:
 
@@ -42,12 +43,48 @@ class Train():
 
         return model
     
-    def train_model(self, train_loader, model):
+    def HPO(self, features, labels, network):
+
+        #get only training features and labels
+        features = features[0:self.training_instances]
+        labels = labels[0:self.training_instances]
+
+        #define the grid search parameters
+        param_grid = {
+            'batch_size': [16, 32, 64, 128],
+            'max_epochs': [5, 10, 25, 50, 100],
+            'optimizer__lr': [0.01, 0.005, 0.001, 0.0005, 0.0001],
+            'optimizer': [optim.SGD, optim.RMSprop, optim.Adam],
+        }
+
+        #set skorch model
+        model = NeuralNetClassifier(
+            module = network,
+            criterion = nn.CrossEntropyLoss,
+            verbose = False
+        )
+
+        #perform grid search with 5-fold cross-validation
+        grid = GridSearchCV(estimator=model, param_grid= param_grid, n_jobs=-1, cv=5)
+        grid_result = grid.fit(features, labels)
+
+        #return best params
+        print(grid_result.best_params_)
+        write_yaml_HPO("main_config.yaml", grid_result.best_params_)
+        return grid_result.best_params_
+    
+    def train_model(self, features, labels, model, best_params):
+        #prepare dataloader
+        train_dataset = TensorDataset(features[0:self.training_instances], labels[0:self.training_instances])
+        train_loader = DataLoader(train_dataset, batch_size=best_params["batch_size"], shuffle=self.shuffle)
+
         #set criterion and optimizer
         criterion = nn.CrossEntropyLoss() #binary cross entropy loss
-        optimizer = optim.Adam(model.parameters(), lr = self.learning_rate)
+        #optimizer = optim.Adam(model.parameters(), lr = self.learning_rate)
+        optimizer = best_params["optimizer"](model.parameters(), lr = best_params["optimizer__lr"])
 
-        for epoch in range(self.epochs):
+        #for epoch in range(self.epochs):
+        for epoch in range(best_params["max_epochs"]):
             total_correct, total_samples = 0, 0
 
             for batch_X, batch_y in train_loader:
@@ -145,13 +182,16 @@ class Train():
         np.random.seed(42)
 
         #prep training instances
-        features, labels, train_loader = self.retrieve_dataset()
+        features, labels = self.retrieve_dataset()
 
         #retrieve correct model
         model = self.retrieve_model()
 
+        #perform HPO
+        best_params = self.HPO(features, labels, model)
+
         #actual train pipeline
-        self.train_model(train_loader, model)
+        self.train_model(features, labels, model, best_params)
 
         #visualize model if desired
         if self.visualize:

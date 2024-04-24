@@ -82,7 +82,7 @@ def train_pipeline():
     # }
     start = time.time()
     #grid = RandomizedSearchCV(estimator=model, param_distributions=param_grid, n_iter=60, n_jobs=1, cv=5)
-    grid = GridSearchCV(estimator=model, param_grid= param_grid, n_jobs=1, cv=5)
+    grid = GridSearchCV(estimator=model, param_grid= param_grid, n_jobs=-1, cv=5)
     grid_result = grid.fit(features, labels)
     end = time.time()
     length = end - start
@@ -98,6 +98,7 @@ def train_pipeline():
     for mean, stdev, param in zip(means, stds, params):
         print("%f (%f) with: %r" % (mean, stdev, param))
     print("It took", length, "seconds!")
+    print(grid_result.best_params_)
 
 
 train_pipeline()
