@@ -3,6 +3,7 @@ import torch
 from torch import nn
 from skorch import NeuralNetClassifier
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
+from sklearn.metrics import matthews_corrcoef, make_scorer
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 import numpy as np
@@ -65,11 +66,20 @@ class Train():
         )
 
         #perform grid search with 5-fold cross-validation
-        grid = GridSearchCV(estimator=model, param_grid= param_grid, n_jobs=-1, cv=5)
+        grid = GridSearchCV(estimator=model, param_grid= param_grid, n_jobs=-1, scoring = make_scorer(matthews_corrcoef), cv=5)
         grid_result = grid.fit(features, labels)
 
         #return best params
         print(grid_result.best_params_)
+
+        print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
+        means = grid_result.cv_results_['mean_test_score']
+        stds = grid_result.cv_results_['std_test_score']
+        params = grid_result.cv_results_['params']
+        for mean, stdev, param in zip(means, stds, params):
+            print("%f (%f) with: %r" % (mean, stdev, param))
+
+            
         write_yaml_HPO("main_config.yaml", grid_result.best_params_)
         return grid_result.best_params_
     
