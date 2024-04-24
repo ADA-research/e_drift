@@ -105,23 +105,22 @@ def unknown_search(instance_idx, eps_idx, epsilons, safe_idx, unsafe_idx, timeou
             print(result[0], "dit is een nieuwe error")
             print(safe_idx, unsafe_idx)
             print(eps_idx, epsilons[eps_idx])
-            continue
+            #break
 
     return safe_idx, unsafe_idx 
 
 
 def determine_critical_eps(instance_idx, epsilons, timeout, yaml_name, result_file):
 
+    #always start with middle epsilon value
+    eps_idx = int(len(epsilons)/2)
+    epsilon = epsilons[eps_idx]
+
     safe_idx = -np.inf
     unsafe_idx = np.inf
 
     terminated = False
     counter = 0
-    
-    
-    #always start with middle epsilon value
-    eps_idx = int(len(epsilons)/2)
-    epsilon = epsilons[eps_idx]
 
     while not terminated:
         print(counter, "counter")
@@ -166,7 +165,7 @@ def determine_critical_eps(instance_idx, epsilons, timeout, yaml_name, result_fi
             if eps_idx < unsafe_idx:
                 unsafe_idx = eps_idx
 
-        elif result[0][0] == "unknown" or result[0][0] == "timeout":
+        elif result[0][0] == "unknown":
             return unknown_search(instance_idx, eps_idx, epsilons, safe_idx, unsafe_idx, timeout, yaml_name, result_file)
 
         else:
@@ -190,7 +189,7 @@ def main():
 
     #set begin and end indexis
     begin_idx = 0
-    end_idx = 10
+    end_idx = 10000
 
     #epsilon values according to Bosman et al. 
     epsilons = np.around(np.arange(0.001, 0.4, 0.002), decimals=3)
@@ -208,8 +207,8 @@ def main():
     labels_pred = np.load(database_path + f"/datasets/labels_{dataset_name}_pred.npy")
 
     #yaml file name
-    yaml_name = "exp_configs/tutorial_examples/custom_nn.yaml"
-    result_file = 'customnn.txt'
+    yaml_name = f"exp_configs/tutorial_examples/custom_{dataset_name}.yaml"
+    result_file = f'custom_{dataset_name}.txt'
 
     #generate csv file
     csv_file = Path(f"results/{dataset_name}.csv")
@@ -232,8 +231,19 @@ def main():
             print(safe_idx, unsafe_idx, "end")
             query_time = time.time() - query_time
 
-            #save distance towards decision boundary for misclassified instance
-            safe_eps = epsilons[safe_idx]
+            #check if safe is not set:
+            if safe_idx == -np.inf:
+                #check if instance is very close to decision boundary (safe==-np.inf and unsafe==0)
+                if unsafe==0:
+                    safe_eps=0
+            
+                #otherwise i) (unknown....unsafe) or ii) all are unknown
+                else:
+                    #actually we want to skip this instance
+                    safe_eps=-1
+            else:
+                safe_eps = epsilons[safe_idx]
+                
             with open(csv_file, "a") as file:
                 writer = csv.writer(file, ["instance_idx","instance", "epsilon", "runtime"])
                 writer.writerow([idx, features[idx], safe_eps, query_time])
