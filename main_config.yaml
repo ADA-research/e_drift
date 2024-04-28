@@ -2,18 +2,18 @@ general:
   data_generator:
     SEA:
       noise: 0.0
-      seed_1: 2
-      seed_2: 3
+      seed_1: 104
+      seed_2: 109
       variant_1: 2
       variant_2: 3
       normalization: true
-  dataset_name: SEA_2_3
+  dataset_name: SEA_2_3_5
   training:
     training_instances: 2000
     shuffle: false
     model: Net_3_2
-    batch_size: 16
-    epochs: 25
+    batch_size: 32
+    epochs: 100
     optimizer: Adam
-    learning_rate: 0.01
+    learning_rate: 0.005
     visualize: true

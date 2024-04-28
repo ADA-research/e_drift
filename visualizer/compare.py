@@ -12,12 +12,11 @@ from river import drift
 from scipy import stats
 
 
-def read_csv(epsilon_sep, epsilon_dec):
+def read_csv(data_name):
 
-    sep_data = pd.read_csv(epsilon_sep)
-    dec_data = pd.read_csv(epsilon_dec)
+    epsilon_values = pd.read_csv(data_name)
 
-    return sep_data["epsilon"], dec_data["epsilon"]
+    return epsilon_values["epsilon"]
 
 def extract(sep_epsilons, dec_epsilons):
 
@@ -34,15 +33,15 @@ def extract(sep_epsilons, dec_epsilons):
 
 def drift_detector(diff_eps,begin_idx, confidence):
 
-    ref_win = diff_eps[0:999]
+    ref_win = diff_eps[1499:1999]
     test_win_values = []
 
     fp_count = 0
     tp_pos = None
     
-    for i in range(1000,len(diff_eps)):
+    for i in range(2000,len(diff_eps)):
 
-        if len(test_win_values)==1000:
+        if len(test_win_values)==500:
 
             res = stats.mannwhitneyu(test_win_values, ref_win)
             if res[1]< confidence:
@@ -69,15 +68,15 @@ def drift_detector(diff_eps,begin_idx, confidence):
 
 def drift_detector1(diff_eps,begin_idx, confidence):
 
-    ref_win = diff_eps[0:999]
+    ref_win = diff_eps[1499:1999]
     test_win_values = []
 
     fp_count = 0
     tp_pos = None
     
-    for i in range(1000,len(diff_eps)):
+    for i in range(2000,len(diff_eps)):
 
-        if len(test_win_values)==1000:
+        if len(test_win_values)==500:
 
             res = stats.ks_2samp(test_win_values, ref_win)
             if res[1]< confidence:
@@ -230,16 +229,14 @@ def graph1(tp_positions, fp_counts, confidences):
     plt.show()
 
 
-
-epsilon_sep = "results/HYP_m001.csv"
-epsilon_dec = "results/HYP_m001_pred.csv"
-begin_idx = 3000
+data_name = "results/SEA_2_3.csv"
+begin_idx = 0
 
 #retrieve seperator epsilon values and decision boundary epsilon values
-sep_epsilons, dec_epsilons = read_csv(epsilon_sep, epsilon_dec)
+epsilon_values = read_csv(data_name)
 
 #extract epsilon values
-diff_eps = extract(sep_epsilons, dec_epsilons)
+#diff_eps = extract(sep_epsilons, dec_epsilons)
 
 
 confidences = [0.05, 0.01, 0.005, 0.001, 0.0001]
@@ -252,25 +249,25 @@ fp_count_ph, tp_pos_ph = [], []
 
 for confidence in confidences:
     #detect drift
-    fp_count, tp_pos = drift_detector(diff_eps, begin_idx, confidence)
+    fp_count, tp_pos = drift_detector(epsilon_values, begin_idx, confidence)
     if tp_pos !=None:
         fp_count_mann.append(fp_count)
         tp_pos_mann.append(tp_pos)
-    fp_count, tp_pos = drift_detector1(diff_eps, begin_idx, confidence)
+    fp_count, tp_pos = drift_detector1(epsilon_values, begin_idx, confidence)
     if tp_pos !=None:
         fp_count_ks.append(fp_count)
         tp_pos_ks.append(tp_pos)
-    fp_count, tp_pos = drift_detector2(diff_eps, begin_idx, confidence)
+    fp_count, tp_pos = drift_detector2(epsilon_values, begin_idx, confidence)
     if tp_pos !=None:
         fp_count_kswin.append(fp_count)
         tp_pos_kswin.append(tp_pos)
 
-    fp_count, tp_pos = drift_detector3(diff_eps, begin_idx, confidence)
+    fp_count, tp_pos = drift_detector3(epsilon_values, begin_idx, confidence)
     if tp_pos !=None:
         fp_count_adwin.append(fp_count)
         tp_pos_adwin.append(tp_pos)
 
-    fp_count, tp_pos = drift_detector4(diff_eps, begin_idx, confidence)
+    fp_count, tp_pos = drift_detector4(epsilon_values, begin_idx, confidence)
     if tp_pos !=None:
         fp_count_ph.append(fp_count)
         tp_pos_ph.append(tp_pos)
