@@ -1,5 +1,6 @@
 import yaml
 import numpy as np
+import pandas as pd
 
 #other python files
 from neural_networks import Train
@@ -38,6 +39,16 @@ def create_dataset(dataset_params: dict, synth_dataset: str, dataset_name: str):
     
     dataset.generate_dataset(dataset.var_1, dataset.var_2, dataset_name)
 
+def get_dataset(dataset_name: str):
+
+    #retrieve features and labels of electricity dataset
+    data = pd.read_csv(f"{dataset_name}.csv",header=None)
+
+    labels = data[8].to_list()
+    labels = [True if label==1 else False for label in labels]
+    data = data.drop(data.columns[[0, 1, 8]], axis=1) 
+
+
 def read_main_config(filename: str) -> yaml:
     """Read in the main configuration file."""
     with open(f"{filename}.yaml", "r") as f:
@@ -59,6 +70,9 @@ def main():
 
     #generate dataset
     create_dataset(main_config["general"]["data_generator"], synth_dataset, dataset_name)
+
+    #get dataset
+    #get_dataset(dataset_name)
 
     #train neural network and get predications based on trained neural network
     train_nn(main_config["general"]["training"], dataset_name)
