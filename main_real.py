@@ -17,6 +17,7 @@ def train_model(model, features, labels, metric):
     print(output)
     print(type(output))
     print(output.get()) 
+    print(model.n_drifts_detected())
 
 def retrieve_dataset(name: str):
 
@@ -46,7 +47,7 @@ def main():
     #train models and evaluate 
     metric = metrics.Accuracy()
 
-    train_model(HATC_model, features, labels, metric)
+    train_model(ARF_model, features, labels, metric)
 
 
 

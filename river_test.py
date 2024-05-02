@@ -45,3 +45,4 @@ model = tree.ExtremelyFastDecisionTreeClassifier(
 metric = metrics.MCC()
 
 print(evaluate.progressive_val_score(data_test, model, metric))
+print(model.n_drifts_detected())

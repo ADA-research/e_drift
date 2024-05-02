@@ -216,11 +216,13 @@ class Net_3_2(nn.Module):
         super(Net_3_2, self).__init__()
         self.fc1 = nn.Linear(3,2)
         self.relu = nn.ReLU()
+        self.dropout1 = nn.Dropout(0.1)
         self.fc2 = nn.Linear(2,2)
         
     def forward(self, x):
         x = self.fc1(x)
         x = self.relu(x)
+        x = self.dropout1(x)
         output = self.fc2(x)
         return output
     

@@ -7,7 +7,7 @@ general:
       variant_1: 2
       variant_2: 3
       normalization: true
-  dataset_name: SEA_test
+  dataset_name: SEA_test_drop
   training:
     training_instances: 2000
     shuffle: false

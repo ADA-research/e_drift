@@ -9,7 +9,6 @@ from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from sklearn.metrics import matthews_corrcoef, make_scorer
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
-import numpy as np
 import matplotlib.pyplot as plt
 from utils import write_yaml_HPO
 
