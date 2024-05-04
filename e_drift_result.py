@@ -68,7 +68,7 @@ def e_drift(dataset_name, drift_index):
     ks_tp, ks_fp, ks_missed =[], [], []
 
 
-    for i in range(1,2):
+    for i in range(1,6):
 
         print(i, "next dataset")
         data = pd.read_csv(f"results/{dataset_name}_{i}.csv")
@@ -109,7 +109,7 @@ def e_drift(dataset_name, drift_index):
 
         #mannu
         w_size = 100
-        confidence = 0.05
+        confidence = 0.005
         mannu_drift = stats.mannwhitneyu
         tp, fp = custom_cd(epsilons, drift_index, w_size, confidence, mannu_drift)
         print(tp, fp)
@@ -119,13 +119,49 @@ def e_drift(dataset_name, drift_index):
         
         #ks
         w_size = 100
-        confidence = 0.05
+        confidence = 0.005
         ks_drift = stats.ks_2samp
         tp, fp = custom_cd(epsilons, drift_index, w_size, confidence, ks_drift)
         print(tp, fp)
         ks_fp.append(fp)
         if tp != None:
             ks_tp.append(tp)
+    
+    #ddm
+    if len(ddm_tp)==0:
+        print("ddm: ", 0,0,0)
+    else:
+        print("ddm", np.mean(ddm_tp), np.std(ddm_tp), np.mean(ddm_fp), np.std(ddm_fp), 5-len(ddm_tp))
+    
+    #eddm
+    if len(eddm_tp)==0:
+        print("eddm: ", 0,0,0)
+    else:
+        print("eddm", np.mean(eddm_tp), np.std(eddm_tp), np.mean(eddm_fp), np.std(eddm_fp), 5-len(eddm_tp))
+
+    #adwin
+    if len(adwin_tp)==0:
+        print("adwin: ", 0,0,0)
+    else:
+        print("adwin", np.mean(adwin_tp), np.std(adwin_tp), np.mean(adwin_fp), np.std(adwin_fp), 5-len(adwin_tp))
+
+    #kswin
+    if len(kswin_tp)==0:
+        print("kswin: ", 0,0,0)
+    else:
+        print("kswin", np.mean(kswin_tp), np.std(kswin_tp), np.mean(kswin_fp), np.std(kswin_fp), 5-len(kswin_tp))
+    
+    #mannu
+    if len(mannu_tp)==0:
+        print("mannu: ", 0,0,0)
+    else:
+        print("mannu", np.mean(mannu_tp), np.std(mannu_tp), np.mean(mannu_fp), np.std(kswin_fp), 5-len(mannu_fp))
+    
+    #ks
+    if len(ks_tp)==0:
+        print("ks: ", 0,0,0)
+    else:
+        print("ks", np.mean(ks_tp), np.std(ks_tp), np.mean(ks_fp), np.std(ks_fp), 5-len(ks_tp))
 
 def main():
 

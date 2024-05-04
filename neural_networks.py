@@ -10,6 +10,38 @@ import numpy as np
 import matplotlib.pyplot as plt
 from utils import write_yaml_HPO
 
+#ALL NETS USED FOR EXPERIMENTS
+class Net_3_2(nn.Module):
+    def __init__(self):
+        super(Net_3_2, self).__init__()
+        self.fc1 = nn.Linear(3,2)
+        self.relu = nn.ReLU()
+        self.fc2 = nn.Linear(2,2)
+        
+    def forward(self, x):
+        x = self.fc1(x)
+        x = self.relu(x)
+        output = self.fc2(x)
+        return output
+    
+class Net_10_2(nn.Module):
+    def __init__(self):
+        super(Net_10_2, self).__init__()
+        self.fc1 = nn.Linear(10,8)
+        self.relu1 = nn.ReLU()
+        self.fc2 = nn.Linear(8,4)
+        self.relu2 = nn.ReLU()
+        self.fc3 = nn.Linear(4,2)
+        
+    def forward(self, x):
+        x = self.fc1(x)
+        x = self.relu1(x)
+        x = self.fc2(x)
+        x = self.relu2(x)
+        output = self.fc3(x)
+        return output
+    
+
 #TRAINING PIPELINE
 class Train():
     def __init__(self, dataset_name, training_instances, shuffle, model, 
@@ -39,6 +71,8 @@ class Train():
 
         if self.model == "Net_3_2":
             model = Net_3_2()
+        elif self.model == "Net_10_2":
+            model = Net_10_2()
         else:
             print(f"Model {self.model} does not yet exist.")
 
@@ -209,24 +243,3 @@ class Train():
         
         #get predictions based on trained model
         self.get_predictions(features, labels, model)
-        
-#ALL NETS USED FOR EXPERIMENTS
-class Net_3_2(nn.Module):
-    def __init__(self):
-        super(Net_3_2, self).__init__()
-        self.fc1 = nn.Linear(3,2)
-        self.relu = nn.ReLU()
-        self.dropout1 = nn.Dropout(0.1)
-        self.fc2 = nn.Linear(2,2)
-        
-    def forward(self, x):
-        x = self.fc1(x)
-        x = self.relu(x)
-        x = self.dropout1(x)
-        output = self.fc2(x)
-        return output
-    
-
-
-
-

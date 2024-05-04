@@ -1,19 +1,21 @@
 general:
   data_generator:
-    SEA:
+    HYP:
+      n_features: 10
+      n_drift_features: 2
+      mag_change: 0.0001
+      sigma: 0.0
       noise: 0.0
-      seed_1: 42
-      seed_2: 43
-      variant_1: 2
-      variant_2: 3
-      normalization: true
-  dataset_name: SEA_test_drop
+      seed_1: 109
+      seed_2: 109
+      normalization: false
+  dataset_name: HYP_0001_5
   training:
     training_instances: 2000
     shuffle: false
-    model: Net_3_2
-    batch_size: 32
+    model: Net_10_2
+    batch_size: 16
     epochs: 100
-    optimizer: Adam
+    optimizer: SGD
     learning_rate: 0.01
     visualize: true

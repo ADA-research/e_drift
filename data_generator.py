@@ -54,7 +54,7 @@ class HYP(Dataset):
     def __init__(self, n_features, n_drift_features, mag_change, sigma=0.0, noise=0.0, seed_1=42, seed_2=42, normalization=False):
         super().__init__(noise, seed_1, seed_2, normalization)
         self.var_1 = synth.Hyperplane(n_features=n_features, n_drift_features=n_drift_features, 
-                                          mag_change=0.0, sigma=sigma, noise=noise, seed=seed_1)
+                                          mag_change=0.0, sigma=sigma, noise_percentage=noise, seed=seed_1)
         self.var_2 = synth.Hyperplane(n_features=n_features, n_drift_features=n_drift_features, 
-                                          mag_change=mag_change, sigma=sigma, noise=noise, seed=seed_2)
+                                          mag_change=mag_change, sigma=sigma, noise_percentage=noise, seed=seed_2)
 
