@@ -3,6 +3,7 @@ from river import evaluate
 from river import metrics
 from river import tree
 from river import dummy
+from river import preprocessing
 import pandas as pd
 import itertools
 
@@ -25,15 +26,18 @@ data_list = []
 
 
 def itfunc(k):
+    scaler = preprocessing.MinMaxScaler()
     
     for i in range(k):
         x = {idx:feature for idx,feature in enumerate(data.loc[i])}
+        scaler.learn_one(x)
+        x = scaler.transform_one(x)
         print(x)
         y = labels[i]
 
         yield x, y
 
-data_test = iter(itfunc(10000))
+data_test = iter(itfunc(10))
 
 model = tree.ExtremelyFastDecisionTreeClassifier(
     grace_period=100,
