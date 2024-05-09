@@ -106,7 +106,7 @@ def error_rate_drift(dataset_name, drift_index):
             adwin_tp.append(tp)
         
         #kswin
-        kswin_drift = drift.KSWIN(seed = i)
+        kswin_drift = drift.KSWIN(window_size=200, stat_size=100)
         tp, fp = river_cd(labels, labels_pred, drift_index, kswin_drift)
         print(tp, fp)
         kswin_fp.append(fp)
@@ -161,7 +161,7 @@ def error_rate_drift(dataset_name, drift_index):
     if len(mannu_tp)==0:
         print("mannu: ", 0,0,0)
     else:
-        print("mannu", np.mean(mannu_tp), np.std(mannu_tp), np.mean(mannu_fp), np.std(kswin_fp), 5-len(mannu_fp))
+        print("mannu", np.mean(mannu_tp), np.std(mannu_tp), np.mean(mannu_fp), np.std(mannu_fp), 5-len(mannu_fp))
     
     #ks
     if len(ks_tp)==0:
@@ -173,7 +173,7 @@ def main():
 
     #params
 
-    dataset_name = "SEA_0_1"
+    dataset_name = "SEA_2_3"
     drift_index = 5000
     
     #3 functions for error-rate, features and 3-drift

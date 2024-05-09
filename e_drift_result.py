@@ -5,14 +5,14 @@ from scipy import stats
 
 def custom_cd(epsilons, drift_index, w_size, confidence, cdd):
 
-    reference_window = epsilons[1500:1600]
+    reference_window = epsilons[1900:2000]
     test_window = []
     fp_count = 0
     tp = None
 
-    for idx, epsilon in enumerate(epsilons[1600:]):
+    for idx, epsilon in enumerate(epsilons[2000:]):
 
-        idx = idx+1600
+        idx = idx+2000
 
 
         if len(test_window)==w_size:
@@ -39,7 +39,7 @@ def river_cd(epsilons, drift_index, cdd):
     fp_count = 0
     tp = None
 
-    for idx, epsilon in enumerate(epsilons[1500:]):
+    for idx, epsilon in enumerate(epsilons[1900:]):
         idx =idx+1500
 
         cdd.update(epsilon)
@@ -100,7 +100,7 @@ def e_drift(dataset_name, drift_index):
             adwin_tp.append(tp)
         
         #kswin
-        kswin_drift = drift.KSWIN(seed=i)
+        kswin_drift = drift.KSWIN(window_size=200, stat_size=100)
         tp, fp = river_cd(epsilons, drift_index, kswin_drift)
         print(tp, fp)
         kswin_fp.append(fp)
@@ -155,7 +155,7 @@ def e_drift(dataset_name, drift_index):
     if len(mannu_tp)==0:
         print("mannu: ", 0,0,0)
     else:
-        print("mannu", np.mean(mannu_tp), np.std(mannu_tp), np.mean(mannu_fp), np.std(kswin_fp), 5-len(mannu_fp))
+        print("mannu", np.mean(mannu_tp), np.std(mannu_tp), np.mean(mannu_fp), np.std(mannu_fp), 5-len(mannu_fp))
     
     #ks
     if len(ks_tp)==0:

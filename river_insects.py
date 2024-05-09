@@ -13,11 +13,12 @@ gen = synth.SEA()#synth.Agrawal(classification_function=0, seed=42)
 dataset = iter(gen.take(10))
 print(next(dataset), "dit is dataset")
 
-data = pd.read_csv("USP/INSECTS_abrupt_balanced.csv",header=None)
+data = pd.read_csv("USP/INSECTS_abrupt_imbalanced.csv",header=None)
 
 
 #retrieve labels
 labels = data[33].to_list()
+print(data[33].value_counts())
 #labels = [True if label==1 else False for label in labels]
 #data = data.drop(data.columns[[0, 1, 8]], axis=1) 
 print(data.head())
