@@ -9,15 +9,15 @@ def custom_cd(labels, labels_pred, drift_index, w_size, confidence, cdd):
     fp_count = 0
     tp = None
 
-    for idx in range(len(labels[1500:1600])):
-        idx = idx+1500
+    for idx in range(len(labels[1900:2000])):
+        idx = idx+1900
 
         reference_window.append(int(not labels[idx] == labels_pred[idx]))
    
 
-    for idx in range(len(labels[1600:])):
+    for idx in range(len(labels[2000:6000])):
 
-        idx = idx+1600
+        idx = idx+2000
 
         result = int(not labels[idx] == labels_pred[idx])
 
@@ -45,8 +45,8 @@ def river_cd(labels, labels_pred, drift_index, cdd):
     fp_count = 0
     tp = None
 
-    for idx in range(len(labels[1500:])):
-        idx = idx+1500
+    for idx in range(len(labels[1900:6000])):
+        idx = idx+1900
 
         result = int(not labels[idx] == labels_pred[idx])
         cdd.update(result)
@@ -161,7 +161,7 @@ def error_rate_drift(dataset_name, drift_index):
     if len(mannu_tp)==0:
         print("mannu: ", 0,0,0)
     else:
-        print("mannu", np.mean(mannu_tp), np.std(mannu_tp), np.mean(mannu_fp), np.std(mannu_fp), 5-len(mannu_fp))
+        print("mannu", np.mean(mannu_tp), np.std(mannu_tp), np.mean(mannu_fp), np.std(mannu_fp), 5-len(mannu_tp))
     
     #ks
     if len(ks_tp)==0:
@@ -173,7 +173,7 @@ def main():
 
     #params
 
-    dataset_name = "SEA_2_3"
+    dataset_name = "SEA_0_2"
     drift_index = 5000
     
     #3 functions for error-rate, features and 3-drift

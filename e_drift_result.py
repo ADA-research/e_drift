@@ -10,7 +10,7 @@ def custom_cd(epsilons, drift_index, w_size, confidence, cdd):
     fp_count = 0
     tp = None
 
-    for idx, epsilon in enumerate(epsilons[2000:]):
+    for idx, epsilon in enumerate(epsilons[2000:6000]):
 
         idx = idx+2000
 
@@ -39,8 +39,8 @@ def river_cd(epsilons, drift_index, cdd):
     fp_count = 0
     tp = None
 
-    for idx, epsilon in enumerate(epsilons[1900:]):
-        idx =idx+1500
+    for idx, epsilon in enumerate(epsilons[1900:6000]):
+        idx =idx+1900
 
         cdd.update(epsilon)
 
@@ -155,7 +155,7 @@ def e_drift(dataset_name, drift_index):
     if len(mannu_tp)==0:
         print("mannu: ", 0,0,0)
     else:
-        print("mannu", np.mean(mannu_tp), np.std(mannu_tp), np.mean(mannu_fp), np.std(mannu_fp), 5-len(mannu_fp))
+        print("mannu", np.mean(mannu_tp), np.std(mannu_tp), np.mean(mannu_fp), np.std(mannu_fp), 5-len(mannu_tp))
     
     #ks
     if len(ks_tp)==0:
@@ -167,7 +167,7 @@ def main():
 
     #params
 
-    dataset_name = "SEA_0_1"
+    dataset_name = "SEA_1_2"
     drift_index = 5000
     
     #3 functions for error-rate, features and 3-drift

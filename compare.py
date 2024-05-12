@@ -13,7 +13,7 @@ def e_custom_cd(epsilons, drift_index, w_size, confidence, cdd):
     fp_count = 0
     tp = None
 
-    for idx, epsilon in enumerate(epsilons[2000:]):
+    for idx, epsilon in enumerate(epsilons[2000:6000]):
 
         idx = idx+2000
 
@@ -42,7 +42,7 @@ def e_river_cd(epsilons, drift_index, cdd):
     fp_count = 0
     tp = None
 
-    for idx, epsilon in enumerate(epsilons[1900:]):
+    for idx, epsilon in enumerate(epsilons[1900:6000]):
         idx =idx+1900
 
         cdd.update(epsilon)
@@ -70,7 +70,7 @@ def error_custom_cd(labels, labels_pred, drift_index, w_size, confidence, cdd):
         reference_window.append(int(not labels[idx] == labels_pred[idx]))
    
 
-    for idx in range(len(labels[2000:])):
+    for idx in range(len(labels[2000:6000])):
 
         idx = idx+2000
 
@@ -100,7 +100,7 @@ def error_river_cd(labels, labels_pred, drift_index, cdd):
     fp_count = 0
     tp = None
 
-    for idx in range(len(labels[1900:])):
+    for idx in range(len(labels[1900:6000])):
         idx = idx+1900
 
         result = int(not labels[idx] == labels_pred[idx])
@@ -140,7 +140,21 @@ def results_custom(dataset_name, drift_index, w_size, confidence, drift_det):
             e_tp.append(tp)
         e_fp.append(fp)
 
-    return np.mean(error_tp)-drift_index, np.mean(error_fp), np.mean(e_tp)-drift_index, np.mean(e_fp)
+    if len(error_tp) == 5:
+        error_tp = np.mean(error_tp)-drift_index
+        error_fp = np.mean(error_fp)
+    else:
+        error_tp = None
+        error_fp = 0
+
+    if len(e_tp) == 5:
+        e_tp = np.mean(e_tp)-drift_index
+        e_fp = np.mean(e_fp)
+    else:
+        e_tp = None
+        e_fp = 0
+    
+    return error_tp, error_fp, e_tp, e_fp
 
 def results_river(dataset_name, drift_index, error_drift_dets, e_drift_dets):
 
@@ -168,16 +182,30 @@ def results_river(dataset_name, drift_index, error_drift_dets, e_drift_dets):
         if tp != None:
             e_tp.append(tp)
         e_fp.append(fp)
+    if len(error_tp) == 5:
+        error_tp = np.mean(error_tp)-drift_index
+        error_fp = np.mean(error_fp)
+    else:
+        error_tp = None
+        error_fp = 0
+
+    if len(e_tp) == 5:
+        e_tp = np.mean(e_tp)-drift_index
+        e_fp = np.mean(e_fp)
+    else:
+        e_tp = None
+        e_fp = 0
     
-
-
-    return np.mean(error_tp)-drift_index, np.mean(error_fp), np.mean(e_tp)-drift_index, np.mean(e_fp)
+    return error_tp, error_fp, e_tp, e_fp
 
 
 def graph1(tp_positions, fp_counts, confidences):
     plt.rcParams["figure.figsize"] = (5,5)
-    names = ["error-rate + DDM", "e-drift + DDM", "error-rate + ADWIN", "e-drift + ADWIN", "error-rate + MannU", "e-drift + MannU", "error-rate + KS", "e-drift + KS"]
+    names = ["er + DDM", "e-drift + DDM", "er + EDDM", "e-drift + EDDM", "er + ADWIN", "e-drift + ADWIN", "er + MannU", "e-drift + MannU", "er + KS", "e-drift + KS"]
     fig1, ax1 = plt.subplots()
+    counts = 0
+    print(tp_positions)
+    print(fp_counts)
     for i in range(len(names)):
         new_tp, new_fp = [], []
         # for tp, fp in zip(tp_positions[i], fp_counts[i]):
@@ -186,8 +214,17 @@ def graph1(tp_positions, fp_counts, confidences):
         #         new_fp.append(fp)
         # tp_positions[i] = new_tp
         # fp_counts[i] = new_fp
+        if len(tp_positions[i])==0:
+            names.pop(i-counts)
+            counts+=1
+            continue
+
+
+
+
         x_points = np.empty(len(tp_positions[i]))
-        x_points.fill(i)
+        print(i-counts)
+        x_points.fill(i-counts)
         color_list = []
         for fp in fp_counts[i]:
 
@@ -195,31 +232,36 @@ def graph1(tp_positions, fp_counts, confidences):
                 color_list.append("green")
 
             elif fp <5:
-                color_list.append("yellow")
-            
-            elif fp <10:
                 color_list.append("orange")
             
-            else:
+            elif fp <10:
                 color_list.append("red")
+            
+            else:
+                color_list.append("black")
 
         ax1.scatter(x_points, tp_positions[i], c=color_list, cmap="viridis")
         ax1.plot(x_points, tp_positions[i], linestyle = "-", color="black")
 
+        if i <4:
+            for j in range(len(tp_positions[i])):
+                #ax1.plot(x_points[j], tp_positions[i][j], marker = "o", c=color_list[j])
+                ax1.annotate("-", (x_points[j],tp_positions[i][j]), ha='left', rotation=60)
 
-        for j in range(len(tp_positions[i])):
-            #ax1.plot(x_points[j], tp_positions[i][j], marker = "o", c=color_list[j])
-            ax1.annotate(confidences[j], (x_points[j],tp_positions[i][j]), ha='left', rotation=60)
+        else:
+            for j in range(len(tp_positions[i])):
+                #ax1.plot(x_points[j], tp_positions[i][j], marker = "o", c=color_list[j])
+                ax1.annotate(confidences[j], (x_points[j],tp_positions[i][j]), ha='left', rotation=60)
     green_patch = mpatches.Patch(color='green', label='FPS = 0')
-    yellow_patch = mpatches.Patch(color='yellow', label='FPS < 5')
-    orange_patch = mpatches.Patch(color='orange', label='FPS < 10')
-    red_patch = mpatches.Patch(color='red', label='FPS >= 10')
-    x_ticks = np.arange(0,8)
+    yellow_patch = mpatches.Patch(color='orange', label='FPS < 5')
+    orange_patch = mpatches.Patch(color='red', label='FPS < 10')
+    red_patch = mpatches.Patch(color='black', label='FPS >= 10')
+    x_ticks = np.arange(0,len(names))
     plt.xticks(x_ticks, names)
-    plt.xlabel("detection mechanism")
-    plt.ylabel("TP detection position")
+    plt.xlabel("input + detection mechanism")
+    plt.ylabel("Averaged detection time")
     #plt.ylim(-0.1, 1500)
-    plt.title("HYP m=0.001")
+    plt.title("SEA 0(8) -> 3(9.5)")
     plt.yscale("log")
     plt.margins(0.2)
     plt.legend(handles=[green_patch, yellow_patch, orange_patch, red_patch])
@@ -233,7 +275,7 @@ def main():
 
     #params
 
-    dataset_name = "SEA_1_2"
+    dataset_name = "SEA_0_3"
     drift_index = 5000
 
     #save results
@@ -242,13 +284,39 @@ def main():
     #DDM + EDDM
     error_drift_dets =[drift.binary.DDM() for i in range(5)]
     e_drift_dets = [drift.binary.DDM() for i in range(5)]
-    drift_det = drift.binary.DDM
 
     error_tp, error_fp, e_tp, e_fp = results_river(dataset_name, drift_index, error_drift_dets, e_drift_dets)
-    tp_positions.append([error_tp])
-    tp_positions.append([e_tp])
-    fp_counts.append([error_fp])
-    fp_counts.append([e_fp])
+    if error_tp is not None:
+        tp_positions.append([error_tp])
+        fp_counts.append([error_fp])
+    else:
+        tp_positions.append([])
+        fp_counts.append([])
+    if e_tp is not None:
+        tp_positions.append([e_tp])
+        fp_counts.append([e_fp])
+    else:
+        tp_positions.append([])
+        fp_counts.append([])
+
+
+    error_drift_dets =[drift.binary.EDDM() for i in range(5)]
+    e_drift_dets = [drift.binary.EDDM() for i in range(5)]
+
+    error_tp, error_fp, e_tp, e_fp = results_river(dataset_name, drift_index, error_drift_dets, e_drift_dets)
+    if error_tp is not None:
+        tp_positions.append([error_tp])
+        fp_counts.append([error_fp])
+    else:
+        tp_positions.append([])
+        fp_counts.append([])
+    if e_tp is not None:
+        tp_positions.append([e_tp])
+        fp_counts.append([e_fp])
+    else:
+        tp_positions.append([])
+        fp_counts.append([])
+
 
     #ADWIN
     confidences = [0.05, 0.01, 0.005, 0.001, 0.0005, 0.0001]
@@ -258,14 +326,24 @@ def main():
         error_drift_dets = [drift.ADWIN(delta=confidence) for i in range(5)]
         e_drift_dets = [drift.ADWIN(delta=confidence) for i in range(5)]
         error_tp, error_fp, e_tp, e_fp = results_river(dataset_name, drift_index, error_drift_dets, e_drift_dets)
-        error_tps.append(error_tp)
-        e_tps.append(e_tp)
-        error_fps.append(error_fp)
-        e_fps.append(e_fp)
-    tp_positions.append(error_tps)
-    tp_positions.append(e_tps)
-    fp_counts.append(error_fps)
-    fp_counts.append(e_fps)
+        if error_tp is not None:
+            error_tps.append(error_tp)
+            error_fps.append(error_fp)
+        if e_tp is not None:
+            e_tps.append(e_tp)
+            e_fps.append(e_fp)
+    if error_tps is not None:
+        tp_positions.append(error_tps)
+        fp_counts.append(error_fps)
+    else:
+        tp_positions.append([])
+        fp_counts.append([])
+    if e_tps is not None:
+        tp_positions.append(e_tps)
+        fp_counts.append(e_fps)
+    else:
+        tp_positions.append([])
+        fp_counts.append([])
 
     #MANNU + KS
     confidences = [0.05, 0.01, 0.005, 0.001, 0.0005, 0.0001]
@@ -276,14 +354,24 @@ def main():
     for confidence in confidences:
         print(confidence)
         error_tp, error_fp, e_tp, e_fp = results_custom(dataset_name, drift_index, w_size, confidence, drift_det)
-        error_tps.append(error_tp)
-        e_tps.append(e_tp)
-        error_fps.append(error_fp)
-        e_fps.append(e_fp)
-    tp_positions.append(error_tps)
-    tp_positions.append(e_tps)
-    fp_counts.append(error_fps)
-    fp_counts.append(e_fps)
+        if error_tp is not None:
+            error_tps.append(error_tp)
+            error_fps.append(error_fp)
+        if e_tp is not None:
+            e_tps.append(e_tp)
+            e_fps.append(e_fp)
+    if error_tps is not None:
+        tp_positions.append(error_tps)
+        fp_counts.append(error_fps)
+    else:
+        tp_positions.append([])
+        fp_counts.append([])
+    if e_tps is not None:
+        tp_positions.append(e_tps)
+        fp_counts.append(e_fps)
+    else:
+        tp_positions.append([])
+        fp_counts.append([])
 
     confidences = [0.05, 0.01, 0.005, 0.001, 0.0005, 0.0001]
     error_tps, error_fps = [], []
@@ -293,14 +381,25 @@ def main():
     for confidence in confidences:
         print(confidence)
         error_tp, error_fp, e_tp, e_fp = results_custom(dataset_name, drift_index, w_size, confidence, drift_det)
-        error_tps.append(error_tp)
-        e_tps.append(e_tp)
-        error_fps.append(error_fp)
-        e_fps.append(e_fp)
-    tp_positions.append(error_tps)
-    tp_positions.append(e_tps)
-    fp_counts.append(error_fps)
-    fp_counts.append(e_fps)
+        if error_tp is not None:
+            error_tps.append(error_tp)
+            error_fps.append(error_fp)
+        if e_tp is not None:
+            e_tps.append(e_tp)
+            e_fps.append(e_fp)
+        
+    if error_tps is not None:
+        tp_positions.append(error_tps)
+        fp_counts.append(error_fps)
+    else:
+        tp_positions.append([])
+        fp_counts.append([])
+    if e_tps is not None:
+        tp_positions.append(e_tps)
+        fp_counts.append(e_fps)
+    else:
+        tp_positions.append([])
+        fp_counts.append([])
 
 
     graph1(tp_positions, fp_counts, confidences)

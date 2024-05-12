@@ -10,15 +10,15 @@ def custom_cd(features, drift_index, w_size, confidence, cdd_1, cdd_2, cdd_3):
     fp_count_1, fp_count_2, fp_count_3 = 0,0,0
     tp_1, tp_2, tp_3 = None, None, None
 
-    for idx in range(len(features[1500:1600])):
-        idx = idx+1500
+    for idx in range(len(features[1900:2000])):
+        idx = idx+1900
         reference_window_1.append(features[idx][0])
         reference_window_2.append(features[idx][1])
         reference_window_3.append(features[idx][2])
 
-    for idx in range(len(features[1600:])):
+    for idx in range(len(features[2000:])):
 
-        idx = idx+1600
+        idx = idx+2000
         #feature 1
         if len(test_window_1)==w_size:
             res = cdd_1(test_window_1, reference_window_1)
@@ -68,8 +68,8 @@ def river_cd(features, drift_index, cdd_1, cdd_2, cdd_3):
     fp_count_1, fp_count_2, fp_count_3 = 0,0,0
     tp_1, tp_2, tp_3 = None, None, None
 
-    for idx in range(len(features[1500:])):
-        idx = idx+1500
+    for idx in range(len(features[1900:])):
+        idx = idx+1900
 
         #first feature
         cdd_1.update(features[idx][0])
@@ -176,13 +176,13 @@ def main():
 
     #params
 
-    dataset_name = "SEA_1_2"
+    dataset_name = "SEA_2_3"
     drift_index = 5000
     
     #3 functions for error-rate, features and 3-drift
 
     error_rate_drift(dataset_name, drift_index)
-    #data = [20,26]
+    #data = [89,32,55,51]
     #print(np.mean(data), np.std(data))
 if __name__ == '__main__':
     main()
