@@ -261,7 +261,7 @@ def graph1(tp_positions, fp_counts, confidences):
     plt.xlabel("input + detection mechanism")
     plt.ylabel("Averaged detection time")
     #plt.ylim(-0.1, 1500)
-    plt.title("SEA 0(8) -> 3(9.5)")
+    plt.title("HYP m=0.001")
     plt.yscale("log")
     plt.margins(0.2)
     plt.legend(handles=[green_patch, yellow_patch, orange_patch, red_patch])
@@ -275,7 +275,7 @@ def main():
 
     #params
 
-    dataset_name = "SEA_0_3"
+    dataset_name = "HYP_001"
     drift_index = 5000
 
     #save results

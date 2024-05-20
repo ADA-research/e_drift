@@ -10,7 +10,7 @@ def custom_cd(epsilons, drift_index, w_size, confidence, cdd):
     fp_count = 0
     tp = None
 
-    for idx, epsilon in enumerate(epsilons[2000:6000]):
+    for idx, epsilon in enumerate(epsilons[2000:]):
 
         idx = idx+2000
 
@@ -39,7 +39,7 @@ def river_cd(epsilons, drift_index, cdd):
     fp_count = 0
     tp = None
 
-    for idx, epsilon in enumerate(epsilons[1900:6000]):
+    for idx, epsilon in enumerate(epsilons[1900:]):
         idx =idx+1900
 
         cdd.update(epsilon)
@@ -56,6 +56,68 @@ def river_cd(epsilons, drift_index, cdd):
     return tp, fp_count
 
 
+def threshold_drift(epsilons, drift_index, w_Size, threshold):
+
+    reference_window = epsilons[1900:2000]
+    mean_ref_window = np.mean(reference_window)
+    if mean_ref_window == 0:
+        mean_ref_window = 0.001
+    test_window = []
+    fp_count = 0
+    tp = None
+
+    for idx, epsilon in enumerate(epsilons[2000:]):
+        idx = idx+2000
+
+
+        if epsilon > mean_ref_window*threshold:
+
+            if idx >= drift_index:
+                tp = idx
+
+                return tp, fp_count
+            
+            else:
+                fp_count+=1
+    return tp, fp_count
+
+
+def threshold_drift_2(epsilons, drift_index, w_Size, threshold):
+    max_eps = 0.001
+    fp_count = 0
+    tp = None
+    for idx, epsilon in enumerate(epsilons[1900:6000]):
+        idx = idx+1900
+        #print(max_eps, "max eps")
+
+        if epsilon > 0:
+
+            #set max if it is still none
+            if max_eps == None:
+                max_eps = epsilon
+            
+            #otherwise
+            elif epsilon > max_eps+threshold :
+
+                #potential drift
+                if idx >= drift_index:
+                    tp = idx
+
+                    return tp, fp_count
+            
+                else:
+                    fp_count+=1
+
+            # elif epsilon > max_eps:
+            #     max_eps = epsilon
+
+    return tp, fp_count
+
+
+
+    
+            
+
 
 def e_drift(dataset_name, drift_index):
 
@@ -66,6 +128,7 @@ def e_drift(dataset_name, drift_index):
     kswin_tp, kswin_fp, kswin_missed =[], [], []
     mannu_tp, mannu_fp, mannu_missed =[], [], []
     ks_tp, ks_fp, ks_missed =[], [], []
+    threshold_tp, threshold_fp = [], []
 
 
     for i in range(1,6):
@@ -126,6 +189,17 @@ def e_drift(dataset_name, drift_index):
         ks_fp.append(fp)
         if tp != None:
             ks_tp.append(tp)
+
+        #hand-tuned 
+        w_size = 100
+        threshold = 0.002*5
+        tp, fp = threshold_drift_2(epsilons, drift_index, w_size, threshold)
+        print(tp, fp)
+        threshold_fp.append(fp)
+        if tp != None:
+            threshold_tp.append(tp)
+
+
     
     #ddm
     if len(ddm_tp)==0:
@@ -163,11 +237,18 @@ def e_drift(dataset_name, drift_index):
     else:
         print("ks", np.mean(ks_tp), np.std(ks_tp), np.mean(ks_fp), np.std(ks_fp), 5-len(ks_tp))
 
+    #threshold
+    if len(threshold_tp)==0:
+        print("threshold", 0,0,0)
+    else:
+        print("threshold", np.mean(threshold_tp), np.std(threshold_tp), np.mean(threshold_fp), np.std(threshold_fp), 5-len(threshold_tp))
+        
+
 def main():
 
     #params
 
-    dataset_name = "SEA_1_2"
+    dataset_name = "HYP_001"
     drift_index = 5000
     
     #3 functions for error-rate, features and 3-drift

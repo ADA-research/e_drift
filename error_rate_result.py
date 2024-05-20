@@ -62,8 +62,6 @@ def river_cd(labels, labels_pred, drift_index, cdd):
                 fp_count+=1
     return tp, fp_count
 
-
-
 def error_rate_drift(dataset_name, drift_index):
 
     #retrieve actual labels and predicted labels
@@ -173,7 +171,7 @@ def main():
 
     #params
 
-    dataset_name = "SEA_0_2"
+    dataset_name = "HYP_001"
     drift_index = 5000
     
     #3 functions for error-rate, features and 3-drift
