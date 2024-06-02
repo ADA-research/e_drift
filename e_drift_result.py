@@ -10,7 +10,7 @@ def custom_cd(epsilons, drift_index, w_size, confidence, cdd):
     fp_count = 0
     tp = None
 
-    for idx, epsilon in enumerate(epsilons[2000:]):
+    for idx, epsilon in enumerate(epsilons[2000:6000]):
 
         idx = idx+2000
 
@@ -39,7 +39,7 @@ def river_cd(epsilons, drift_index, cdd):
     fp_count = 0
     tp = None
 
-    for idx, epsilon in enumerate(epsilons[1900:]):
+    for idx, epsilon in enumerate(epsilons[1900:6000]):
         idx =idx+1900
 
         cdd.update(epsilon)
@@ -86,37 +86,20 @@ def threshold_drift_2(epsilons, drift_index, w_Size, threshold):
     max_eps = 0.001
     fp_count = 0
     tp = None
-    for idx, epsilon in enumerate(epsilons[1900:6000]):
-        idx = idx+1900
+    for idx, epsilon in enumerate(epsilons[2000:6000]):
+        idx = idx+2000
         #print(max_eps, "max eps")
 
-        if epsilon > 0:
-
-            #set max if it is still none
-            if max_eps == None:
-                max_eps = epsilon
-            
-            #otherwise
-            elif epsilon > max_eps+threshold :
-
-                #potential drift
-                if idx >= drift_index:
+        if epsilon>threshold:
+            #potential drift
+            if idx >= drift_index:
                     tp = idx
-
                     return tp, fp_count
-            
-                else:
-                    fp_count+=1
-
-            # elif epsilon > max_eps:
-            #     max_eps = epsilon
-
+            else:
+                fp_count+=1
+    
     return tp, fp_count
 
-
-
-    
-            
 
 
 def e_drift(dataset_name, drift_index):
@@ -192,7 +175,7 @@ def e_drift(dataset_name, drift_index):
 
         #hand-tuned 
         w_size = 100
-        threshold = 0.002*5
+        threshold = 0.015
         tp, fp = threshold_drift_2(epsilons, drift_index, w_size, threshold)
         print(tp, fp)
         threshold_fp.append(fp)
@@ -248,7 +231,7 @@ def main():
 
     #params
 
-    dataset_name = "HYP_001"
+    dataset_name = "SEA_0_2"
     drift_index = 5000
     
     #3 functions for error-rate, features and 3-drift

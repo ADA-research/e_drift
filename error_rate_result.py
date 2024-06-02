@@ -171,7 +171,7 @@ def main():
 
     #params
 
-    dataset_name = "HYP_001"
+    dataset_name = "SEA_0_1"
     drift_index = 5000
     
     #3 functions for error-rate, features and 3-drift
