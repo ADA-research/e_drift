@@ -14,8 +14,8 @@ general:
     training_instances: 2000
     shuffle: false
     model: Net_10_2
-    batch_size: 16
+    batch_size: 64
     epochs: 100
-    optimizer: SGD
-    learning_rate: 0.01
+    optimizer: Adam
+    learning_rate: 0.005
     visualize: true

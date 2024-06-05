@@ -19,10 +19,10 @@ torch.manual_seed(42)
 np.random.seed(42)
 
 #ALL NETS USED FOR EXPERIMENTS
-class Net_6_2(nn.Module):
+class Net_7_2(nn.Module):
     def __init__(self):
-        super(Net_6_2, self).__init__()
-        self.fc1 = nn.Linear(6,4)
+        super(Net_7_2, self).__init__()
+        self.fc1 = nn.Linear(7,4)
         self.relu = nn.ReLU()
         self.fc2 = nn.Linear(4,2)
         self.relu = nn.ReLU()
@@ -44,7 +44,7 @@ def get_dataset(dataset_name: str):
 
     labels = data[8].to_list()
     labels = [True if label==1 else False for label in labels]
-    features = data.drop(data.columns[[0, 1, 8]], axis=1) 
+    features = data.drop(data.columns[[1, 8]], axis=1) 
 
     #save as numpy arrays
     features = features.to_numpy()
@@ -58,7 +58,7 @@ def get_dataset(dataset_name: str):
     return features, labels
 
 def retrieve_model():
-    model = Net_6_2()
+    model = Net_7_2()
     return model
 
 def HPO(features, labels, network):
@@ -166,23 +166,23 @@ def visualize_model(features, labels, model):
     results = []
     acc = 0
 
-    for i in range(0,len(labels), 100):
+    for i in range(2000,len(labels), 1000):
         print(i, "current index")
 
         #forward pass only
         with torch.no_grad():
-            x = model(features[i:i+100])
+            x = model(features[i:i+1000])
 
             #get predictions
             predicted = torch.argmax(torch.softmax(x, dim=1), dim=1)
 
             #get correct predictions
-            correct_predictions = (predicted==labels[i:i+100]).sum().item()
+            correct_predictions = (predicted==labels[i:i+1000]).sum().item()
             acc+=correct_predictions
 
         #save some statistics    
-        results.append(correct_predictions/100)
-        print("accuracy: ", correct_predictions/100)
+        results.append(correct_predictions/len(features[i:i+1000]))
+        print("accuracy: ", correct_predictions/len(features[i:i+1000]))
 
     #visualize the drift over all instances (train and test)
     visualize_drift(results)
