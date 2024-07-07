@@ -22,7 +22,7 @@ def get_misclassifications(dataset):
         runtimes = data["runtime"].to_list()
         epsilons = data["epsilon"].to_list()
 
-        for idx, (eps, runtime) in enumerate(zip(epsilons[0:], runtimes[100:])):
+        for idx, (eps, runtime) in enumerate(zip(epsilons[0:], runtimes[0:])):
             idx+=0
 
             if runtime>0.0:

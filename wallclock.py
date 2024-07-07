@@ -109,10 +109,8 @@ def determine_wallclock_er(dataset_names):
                 
                 #add time
                 all_times.append(query_time)
-                if min_time == None or query_time < min_time:
-                    print(min_time)
+                if (min_time == None or query_time < min_time) and query_time >0:
                     min_time = query_time
-                    print(min_time)
 
                 if max_time == None or query_time > max_time:
                     max_time = query_time
@@ -128,8 +126,8 @@ def main():
 
     #dataset_names = ["SEA_0_1", "SEA_0_2", "SEA_0_3", "SEA_1_2", "SEA_1_3", "SEA_2_3"]
     dataset_names = ["HYP_001"]
-    determine_wallclock(dataset_names)
-    #determine_wallclock_er(dataset_names)
+    #determine_wallclock(dataset_names)
+    determine_wallclock_er(dataset_names)
 
 
 
